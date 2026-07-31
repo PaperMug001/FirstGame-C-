@@ -41,36 +41,19 @@ int main()
     {
         float x, y;
         float speed;
-        int direction;
-        int width;
-        int height;
         int alive;
     }
 
     std::vector<Spike> spikes;
 
-    void SpawnEnemy(float x, float y, int direction)
+    void SpawnEnemy(float x, float y)
     {
         Spike spike;
         spike.x = x;
         spike.y = y;
         spike.speed = 5.0f;
         spike.alive = true;
-
-        spike.direction = direction;
-        if (direction == 0)
-        {
-             spike.width = 8;
-             spike.height = 1;   
-        }else
-        {
-            spike.width = 1;
-            spike.height = 8;
-        }
-
-        // TODO MAKE SPIKE ALSO CHANGE SPEED - OR + BASED ON WHICH DIRECTION OF THE AXIS IT CAME FROM
-        // MAYBE CAN BE DONE USING THE CHECK OF X AND Y
-        
+                
         spikes.push_back(spike);
         
     }
@@ -82,7 +65,6 @@ int main()
 
     // Variables I guess
     int dashSpeed = 5;
-    int dashAxis = 0;
     int dashDirection = 1;
     int dashCoolDown = 200; // millisecond
     int canDash = 1;
@@ -110,7 +92,6 @@ int main()
                 {
                     state = DASHING;
                     dashDirection = 1;
-                    dashAxis = 0;
                     dashTimer = 100;
 
                     canDash = 0;
@@ -121,37 +102,12 @@ int main()
                 {
                     state = DASHING;
                     dashDirection = -1;
-                    dashAxis = 0;
                     dashTimer = 100;
 
                     canDash = 0;
                     lastDash = SDL_GetTicks();
                 }
-                // UP AND DOWN
-                
-                if (event.key.keysym.scancode == SDL_SCANCODE_UP && canDash && state == NORMAL)
-                {
-                    state = DASHING;
-                    dashDirection = -1;
-                    
-                    dashAxis = 1;
-                    dashTimer = 100;
-
-                    canDash = 0;
-                    lastDash = SDL_GetTicks();
-                }
-
-                if (event.key.keysym.scancode == SDL_SCANCODE_DOWN && canDash && state == NORMAL)
-                {
-                    state = DASHING;
-                    dashDirection = 1;
-                    dashAxis = 1;
-                    dashTimer = 100;
-
-                    canDash = 0;
-                    lastDash = SDL_GetTicks();
-                }
-                
+                                
             }
 
         }
@@ -164,11 +120,8 @@ int main()
         // Update
         if (state == DASHING)
         {
-            if (dashAxis == 0)
-                player.x += dashDirection * dashSpeed;
-            if (dashAxis == 1)
-                player.y += dashDirection * dashSpeed;
-
+            player.x += dashDirection * dashSpeed;
+            
             dashTimer -= 16;
 
             if (dashTimer <= 0)
