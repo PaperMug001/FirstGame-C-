@@ -43,8 +43,9 @@ int main()
 
     // Variables I guess
     int dashSpeed = 5;
+    int dashAxis = 0;
     int dashDirection = 1;
-    int dashCoolDown = 800; // millisecond
+    int dashCoolDown = 700; // millisecond
     int canDash = 1;
 
     int dashTimer = 0;
@@ -65,10 +66,12 @@ int main()
 
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0)
             {
+                // LEFT AND RIGHT
                 if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT && canDash && state == NORMAL)
                 {
                     state = DASHING;
                     dashDirection = 1;
+                    dashAxis = 0;
                     dashTimer = 100;
 
                     canDash = 0;
@@ -79,11 +82,37 @@ int main()
                 {
                     state = DASHING;
                     dashDirection = -1;
+                    dashAxis = 0;
                     dashTimer = 100;
 
                     canDash = 0;
                     lastDash = SDL_GetTicks();
                 }
+                // UP AND DOWN
+                
+                if (event.key.keysym.scancode == SDL_SCANCODE_UP && canDash && state == NORMAL)
+                {
+                    state = DASHING;
+                    dashDirection = -1;
+                    
+                    dashAxis = 1;
+                    dashTimer = 100;
+
+                    canDash = 0;
+                    lastDash = SDL_GetTicks();
+                }
+
+                if (event.key.keysym.scancode == SDL_SCANCODE_DOWN && canDash && state == NORMAL)
+                {
+                    state = DASHING;
+                    dashDirection = 1;
+                    dashAxis = 1;
+                    dashTimer = 100;
+
+                    canDash = 0;
+                    lastDash = SDL_GetTicks();
+                }
+                
             }
 
         }
@@ -96,7 +125,10 @@ int main()
         // Update
         if (state == DASHING)
         {
-            player.x += dashDirection * dashSpeed;
+            if (dashAxis == 0)
+                player.x += dashDirection * dashSpeed;
+            if (dashAxis == 1)
+                player.y += dashDirection * dashSpeed;
 
             dashTimer -= 16;
 
