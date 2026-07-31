@@ -39,6 +39,11 @@ int main()
 
     // Variables I guess
     int dash = 10;
+    int dashCoolDown = 100; // 1/10 sec
+    int allowDash = 1;
+
+    // Timer
+    Uint32 lastDash = SDL_GetTicks();
 
     int running = 1;
 
@@ -55,10 +60,28 @@ int main()
         // Input and stuff
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-        if (keys[SDL_SCANCODE_LEFT])
-            player.x = player.x - dash;
-        if (keys[SDL_SCANCODE_RIGHT])
-            player.x = player.x + dash;
+        
+        if (keys[SDL_SCANCODE_LEFT] && allowDash)
+        {
+            player.x -= dash;
+            allowDash = 0;
+        }
+
+        if (keys[SDL_SCANCODE_RIGHT] && allowDash)
+        {
+            player.x += dash;
+            allowDash = 0;
+        }
+        
+        // Update
+
+        Uint32 now = SDL_GetTicks();
+
+        if (now - lastDash >= dashCoolDown)
+        {
+            lastDash = now;
+            allowDash = 1; // enable dashing again
+        }
 
         // Rendering Stuff (Probably)
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
