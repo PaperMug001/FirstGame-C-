@@ -38,8 +38,8 @@ int main()
     SDL_Rect player = {60, 60, 8, 8};
 
     // Variables I guess
-    int dash = 10;
-    int dashCoolDown = 100; // 1/10 sec
+    int dash = 20;
+    int dashCoolDown = 800; // milliseconds
     int allowDash = 1;
 
     // Timer
@@ -55,23 +55,24 @@ int main()
         {
             if (event.type == SDL_QUIT)
                 running = 0;
+
+            if (event.type == SDL_KEYDOWN && event.key.repeat == 0)
+            {
+                if (event.key.keysym.scancode == SDL_SCANCODE_LEFT && allowDash)
+                {
+                    player.x -= dash;
+                    allowDash = 0;
+                }
+                if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT && allowDash)
+                {
+                    player.x += dash;
+                    allowDash = 0;
+                }
+            }
         }
 
         // Input and stuff
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
-        
-        if (keys[SDL_SCANCODE_LEFT] && allowDash)
-        {
-            player.x -= dash;
-            allowDash = 0;
-        }
-
-        if (keys[SDL_SCANCODE_RIGHT] && allowDash)
-        {
-            player.x += dash;
-            allowDash = 0;
-        }
         
         // Update
 
