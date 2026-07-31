@@ -37,10 +37,17 @@ int main()
     // Create Objects here
     SDL_Rect player = {60, 60, 8, 8};
 
+    // Player state
+    enum {NORMAL, DASHING};
+    int state = NORMAL;
+
     // Variables I guess
-    int dash = 20;
-    int dashCoolDown = 800; // milliseconds
-    int allowDash = 1;
+    int dashSpeed = 5;
+    int dashDirection = 1;
+    int dashCoolDown = 800; // millisecond
+    int canDash = 1;
+
+    int dashTimer = 0;
 
     // Timer
     Uint32 lastDash = SDL_GetTicks();
@@ -58,30 +65,52 @@ int main()
 
             if (event.type == SDL_KEYDOWN && event.key.repeat == 0)
             {
-                if (event.key.keysym.scancode == SDL_SCANCODE_LEFT && allowDash)
+                if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT && canDash && state == NORMAL)
                 {
-                    player.x -= dash;
-                    allowDash = 0;
+                    state = DASHING;
+                    dashDirection = 1;
+                    dashTimer = 100;
+
+                    canDash = 0;
+                    lastDash = SDL_GetTicks();
                 }
-                if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT && allowDash)
+
+                if (event.key.keysym.scancode == SDL_SCANCODE_LEFT && canDash && state == NORMAL)
                 {
-                    player.x += dash;
-                    allowDash = 0;
+                    state = DASHING;
+                    dashDirection = -1;
+                    dashTimer = 100;
+
+                    canDash = 0;
+                    lastDash = SDL_GetTicks();
                 }
             }
+
         }
 
         // Input and stuff
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
-        
+
+
+                
         // Update
+        if (state == DASHING)
+        {
+            player.x += dashDirection * dashSpeed;
+
+            dashTimer -= 16;
+
+            if (dashTimer <= 0)
+            {
+                state = NORMAL;
+            }
+        }
 
         Uint32 now = SDL_GetTicks();
 
-        if (now - lastDash >= dashCoolDown)
+        if (!canDash && now - lastDash >= dashCoolDown)
         {
-            lastDash = now;
-            allowDash = 1; // enable dashing again
+            canDash  = 1; // enable dashing again
         }
 
         // Rendering Stuff (Probably)
