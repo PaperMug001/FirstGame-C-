@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define MAX_SPIKES 100
 
@@ -31,8 +32,18 @@ void SpawnEnemy(float x, float y)
 }
 
 
+int genRandomNumber(int min, int max)
+{
+    int num = min + rand() % (max - min + 1);
+
+    return num;
+}
+
 int main()
 {
+    // setup random number generator
+    srand(time(NULL));
+    
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         printf("SDL failed: %s\n", SDL_GetError());
