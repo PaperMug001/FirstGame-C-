@@ -1,5 +1,35 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SPIKES 100
+
+struct Spike
+{
+    float x, y;
+    float speed;
+    int alive;
+};
+
+struct Spike spikes[MAX_SPIKES];
+int spikeCount = 0;
+
+void SpawnEnemy(float x, float y)
+{
+    if (spikeCount >= MAX_SPIKES)
+        return;
+
+    struct Spike spike;
+
+    spike.x = x;
+    spike.y = y;
+    spike.speed = 5.0f;
+    spike.alive = 1;
+
+    spikes[spikeCount] = spike;
+    spikeCount++;
+}
+
 
 int main()
 {
@@ -37,27 +67,7 @@ int main()
     // Create Objects here
     SDL_Rect player = {60, 60, 8, 8};
 
-    struct Spike
-    {
-        float x, y;
-        float speed;
-        int alive;
-    }
-
-    std::vector<Spike> spikes;
-
-    void SpawnEnemy(float x, float y)
-    {
-        Spike spike;
-        spike.x = x;
-        spike.y = y;
-        spike.speed = 5.0f;
-        spike.alive = true;
-                
-        spikes.push_back(spike);
-        
-    }
-
+    
     // Player state
     enum {NORMAL, DASHING};
     int state = NORMAL;
@@ -137,15 +147,7 @@ int main()
             canDash  = 1; // enable dashing again
         }
 
-        // spikes
-        for (Spike &spike : spikes)
-        {
-            if (spike.direction == 0)
-                spike.x += spike.speed;
-            if (spike.direction == 1)
-                spike.y += spike.speed;
-        }
-
+        
         // Rendering Stuff (Probably)
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
         SDL_RenderClear(renderer);
