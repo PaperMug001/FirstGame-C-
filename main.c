@@ -12,7 +12,7 @@ struct Spike
     int alive;
 };
 
-struct Spike spikes[MAX_SPIKES];
+struct Spike spikes[MAX_SPIKES]; // array of spikes;
 int spikeCount = 0;
 
 void SpawnEnemy(float x, float y)
@@ -91,9 +91,11 @@ int main()
     int canDash = 1;
 
     int dashTimer = 0;
+    int spawnInterval = 1200; // 0.8 sec
 
-    // Timer
+    // Timers
     Uint32 lastDash = SDL_GetTicks();
+    Uint32 lastSpawned = SDL_GetTicks();
 
     int running = 1;
 
@@ -136,8 +138,7 @@ int main()
         // Input and stuff
         const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-
-                
+        
         // Update
         if (state == DASHING)
         {
@@ -158,14 +159,41 @@ int main()
             canDash  = 1; // enable dashing again
         }
 
-        
-        // Rendering Stuff (Probably)
+        if (now - lastSpawned >= spawnInterval)
+        {
+            float y = -1.0f;
+            int randomX = genRandomNumber(1, 126);
+            float x = (float)randomX;
+            SpawnEnemy(x, y);
+            lastSpawned = now;
+        }
+
+        for (int i = 0; i < spikeCount; i++)
+        {
+            spikes[i].y += spikes[i].speed;
+        }
+    
+         // Rendering Stuff (Probably)
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                
+
+
+        // player            
         SDL_RenderFillRect(renderer, &player);
 
+        // Draw Spikes
+        for (int i = 0; i < spikeCount; i++)
+        {
+            SDL_Rect spikeRect = {
+                (int)spikes[i].x,
+                (int)spikes[i].y,
+                1,
+                8
+            };
+
+            SDL_RenderFillRect(renderer, &spikeRect);
+        }
 
         // Stuff i should not touch probably
         SDL_RenderPresent(renderer);
